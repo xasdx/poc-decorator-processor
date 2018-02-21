@@ -1,3 +1,5 @@
+import { Component } from "./processor"
+
 @Component
 class CompA {
 

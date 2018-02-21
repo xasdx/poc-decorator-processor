@@ -1,11 +1,16 @@
+import { Component, Wired } from "./processor"
+
+import "./comp-a"
+import "./comp-b"
+
 @Component
 class Application {
 
   @Wired
-  compA = null
+  compA
 
   @Wired
-  compB = null
+  compB
 
   test() {
     let hello = this.compA.sayHello()
