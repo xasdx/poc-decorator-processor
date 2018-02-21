@@ -1,1 +1,15 @@
-console.log("hi")
+@Component
+class Application {
+
+  @Wired
+  compA = null
+
+  @Wired
+  compB = null
+
+  test() {
+    let hello = this.compA.sayHello()
+    let result = this.compB.greetTheWorld(hello)
+    console.log(result)
+  }
+}
