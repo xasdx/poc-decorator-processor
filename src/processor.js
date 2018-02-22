@@ -18,8 +18,11 @@ function createInstance(target) {
   instances.push(instanceEntry)
 }
 
-function findInstance(id) {
-  let instanceEntry = instances.filter(i => i.id === id)[0]
+function findInstance(id, ignoreCase) {
+  let instanceEntry = instances.filter(i => {
+    if (ignoreCase) { return i.id.toLowerCase() === id.toLowerCase() }
+               else { return i.id === id }
+  })[0]
   if (!instanceEntry) { throw `Could not find matching instance for ${id}` }
   return instanceEntry.instance
 }
@@ -31,15 +34,17 @@ function wireInstances() {
     
     let fieldName = wiringTask.name
     let className = wiringTask.target.constructor.name
-    let classInstance = findInstance(className)
-    let instance = findInstance(fieldName)
+    let classInstance = findInstance(className, true)
+    let instance = findInstance(fieldName, true)
     
     console.log(`Wiring ${instance.constructor.name} to ${className}::${fieldName}`)
     classInstance[fieldName] = instance
   }
 }
 
-console.log(`Node modules have been loaded: ${main.loaded}`)
-wireInstances()
+setTimeout(() => {
+  console.log(`Node modules have been loaded: ${main.loaded}`)
+  wireInstances()
+}, 1)
 
 export { Component, Wired, findInstance }

@@ -7,10 +7,10 @@ import "./comp-b"
 class Application {
 
   @Wired
-  compA
+  compA = null
 
   @Wired
-  compB
+  compB = null
 
   test() {
     let hello = this.compA.sayHello()
