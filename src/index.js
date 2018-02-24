@@ -1,7 +1,6 @@
-import containr, { Component, Wired } from "./processor"
+import containr, { Component, Wired, discoverComponents } from "./processor"
 
-import "./comp-a"
-import "./comp-b"
+discoverComponents()
 
 @Component
 class Application {

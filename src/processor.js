@@ -1,3 +1,5 @@
+import scanr from "./scanr"
+
 let main = module.parent
 
 let instances = []
@@ -46,6 +48,11 @@ function wireInstances() {
 
 function assembled(callback) { onAssembled = callback }
 
+function discoverComponents() {
+  let files = scanr()
+  files.forEach(path => require(path))
+}
+
 setTimeout(() => {
   console.log(`Node modules have been loaded: ${main.loaded}`)
   wireInstances()
@@ -54,5 +61,5 @@ setTimeout(() => {
   })
 }, 1)
 
-export { Component, Wired, findInstance }
+export { Component, Wired, findInstance, discoverComponents }
 export default assembled

@@ -1,4 +1,4 @@
-import { Component } from "./processor"
+import { Component } from "../processor"
 
 @Component
 class CompB {
