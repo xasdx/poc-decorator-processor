@@ -1,4 +1,4 @@
-import { Component, Wired } from "./processor"
+import containr, { Component, Wired } from "./processor"
 
 import "./comp-a"
 import "./comp-b"
@@ -18,3 +18,8 @@ class Application {
     console.log(result)
   }
 }
+
+containr(registry => {
+  let app = registry.getByName("application")
+  app.test()
+})

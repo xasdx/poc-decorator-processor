@@ -3,6 +3,8 @@ let main = module.parent
 let instances = []
 let wiringQueue = []
 
+let onAssembled = null
+
 function Component(target, name, descriptor) {
   console.log(`Found @Component on type ${target.name}`)
   createInstance(target)
@@ -42,9 +44,15 @@ function wireInstances() {
   }
 }
 
+function assembled(callback) { onAssembled = callback }
+
 setTimeout(() => {
   console.log(`Node modules have been loaded: ${main.loaded}`)
   wireInstances()
+  onAssembled({
+    getByName: (name) => findInstance(name, true)
+  })
 }, 1)
 
 export { Component, Wired, findInstance }
+export default assembled
