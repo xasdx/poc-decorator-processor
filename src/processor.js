@@ -17,6 +17,14 @@ function Wired(target, name, descriptor) {
   wiringQueue.push({ target: target, name: name, descriptor: descriptor })
 }
 
+function ComponentScanner(path) {
+  return (target, name, descriptor) => {
+    path = path || __dirname
+    console.log(`ComponentScanner on path ${path}`)
+    scanr().forEach(path => require(path))
+  }
+}
+
 function createInstance(target) {
   let instanceEntry = { id: target.name, instance: new target() }
   instances.push(instanceEntry)
@@ -48,18 +56,14 @@ function wireInstances() {
 
 function assembled(callback) { onAssembled = callback }
 
-function discoverComponents() {
-  let files = scanr()
-  files.forEach(path => require(path))
-}
-
 setTimeout(() => {
   console.log(`Node modules have been loaded: ${main.loaded}`)
   wireInstances()
+  console.log(`Container has been assembled`)
   onAssembled({
     getByName: (name) => findInstance(name, true)
   })
 }, 1)
 
-export { Component, Wired, findInstance, discoverComponents }
+export { Component, Wired, ComponentScanner }
 export default assembled

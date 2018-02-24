@@ -1,8 +1,7 @@
-import containr, { Component, Wired, discoverComponents } from "./processor"
-
-discoverComponents()
+import containr, { Component, Wired, ComponentScanner } from "./processor"
 
 @Component
+@ComponentScanner(__dirname)
 class Application {
 
   @Wired

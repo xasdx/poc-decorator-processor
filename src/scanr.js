@@ -17,4 +17,4 @@ let isFileIgnored = (file) => ["scanr.js", "processor.js"].includes(file)
 
 let isDirectory = (path) => fs.statSync(path).isDirectory()
 
-export default (rootDirPath) => scanSyncRecursive(rootDirPath ? path.join(__dirname, rootDirPath) : __dirname)
+export default (rootDirPath) => scanSyncRecursive(rootDirPath || __dirname)
