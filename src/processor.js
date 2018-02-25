@@ -6,6 +6,11 @@ let instances = []
 let wiringQueue = []
 
 let onAssembled = null
+let entryPoint = null
+
+let containr = {
+  component: name => findInstance(name, true)
+}
 
 function Component(target, name, descriptor) {
   console.log(`Found @Component on type ${target.name}`)
@@ -22,6 +27,13 @@ function ComponentScanner(path) {
     path = path || __dirname
     console.log(`ComponentScanner on path ${path}`)
     scanr().forEach(path => require(path))
+  }
+}
+
+function EntryPoint(entryPointMethod) {
+  return (target, name, descriptor) => {
+    console.log(`Defining entry point as ${target.name}::${entryPointMethod}`)
+    entryPoint = { component: target.name, method: entryPointMethod }
   }
 }
 
@@ -60,10 +72,14 @@ setTimeout(() => {
   console.log(`Node modules have been loaded: ${main.loaded}`)
   wireInstances()
   console.log(`Container has been assembled`)
-  onAssembled({
-    getByName: (name) => findInstance(name, true)
-  })
+  if (onAssembled) {
+    onAssembled(containr)
+  } else if (entryPoint) {
+    let entryPointComponent = findInstance(entryPoint.component, true)
+    entryPointComponent[entryPoint.method](containr)
+  } else {
+    console.log("No application entry point has been defined")
+  }
 }, 1)
 
-export { Component, Wired, ComponentScanner }
-export default assembled
+export { Component, Wired, ComponentScanner, EntryPoint, assembled }

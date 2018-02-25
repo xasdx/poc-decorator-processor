@@ -1,7 +1,8 @@
-import containr, { Component, Wired, ComponentScanner } from "./processor"
+import { Component, Wired, ComponentScanner, EntryPoint } from "./processor"
 
 @Component
 @ComponentScanner(__dirname)
+@EntryPoint("main")
 class Application {
 
   @Wired
@@ -15,9 +16,8 @@ class Application {
     let result = this.compB.greetTheWorld(hello)
     console.log(result)
   }
+  
+  main(containr) {
+    containr.component("application").test()
+  }
 }
-
-containr(registry => {
-  let app = registry.getByName("application")
-  app.test()
-})
