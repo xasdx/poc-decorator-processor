@@ -1,49 +1,20 @@
-import scanr from "./scanr"
+import component from "./decorator/component"
+import wired from "./decorator/wired"
+import componentScanner from "./decorator/component-scanner"
+import entryPoint from "./decorator/entrypoint"
 
 let main = module.parent
 
-let instances = []
-let wiringQueue = []
-
-let onAssembled = null
-let entryPoint = null
-
 let containr = {
+  instances: [],
+  wiringQueue: [],
+  entryPoint: null,
+  onAssembled: null,
   component: name => findInstance(name, true)
 }
 
-function Component(target, name, descriptor) {
-  console.log(`Found @Component on type ${target.name}`)
-  createInstance(target)
-}
-
-function Wired(target, name, descriptor) {
-  console.log(`Found @Wired on field ${name}`)
-  wiringQueue.push({ target: target, name: name, descriptor: descriptor })
-}
-
-function ComponentScanner(path) {
-  return (target, name, descriptor) => {
-    path = path || __dirname
-    console.log(`ComponentScanner on path ${path}`)
-    scanr().forEach(path => require(path))
-  }
-}
-
-function EntryPoint(entryPointMethod) {
-  return (target, name, descriptor) => {
-    console.log(`Defining entry point as ${target.name}::${entryPointMethod}`)
-    entryPoint = { component: target.name, method: entryPointMethod }
-  }
-}
-
-function createInstance(target) {
-  let instanceEntry = { id: target.name, instance: new target() }
-  instances.push(instanceEntry)
-}
-
-function findInstance(id, ignoreCase) {
-  let instanceEntry = instances.filter(i => {
+let findInstance = (id, ignoreCase) => {
+  let instanceEntry = containr.instances.filter(i => {
     if (ignoreCase) { return i.id.toLowerCase() === id.toLowerCase() }
                else { return i.id === id }
   })[0]
@@ -51,9 +22,9 @@ function findInstance(id, ignoreCase) {
   return instanceEntry.instance
 }
 
-function wireInstances() {
+let wireInstances = () => {
   while (true) {
-    let wiringTask = wiringQueue.pop()
+    let wiringTask = containr.wiringQueue.pop()
     if (!wiringTask) { return }
     
     let fieldName = wiringTask.name
@@ -66,20 +37,24 @@ function wireInstances() {
   }
 }
 
-function assembled(callback) { onAssembled = callback }
+let assembled = (callback) => { containr.onAssembled = callback }
 
 setTimeout(() => {
   console.log(`Node modules have been loaded: ${main.loaded}`)
   wireInstances()
   console.log(`Container has been assembled`)
-  if (onAssembled) {
-    onAssembled(containr)
-  } else if (entryPoint) {
-    let entryPointComponent = findInstance(entryPoint.component, true)
-    entryPointComponent[entryPoint.method](containr)
+  if (containr.onAssembled) {
+    containr.onAssembled(containr)
+  } else if (containr.entryPoint) {
+    let entryPointComponent = findInstance(containr.entryPoint.component, true)
+    entryPointComponent[containr.entryPoint.method](containr)
   } else {
     console.log("No application entry point has been defined")
   }
 }, 1)
 
-export { Component, Wired, ComponentScanner, EntryPoint, assembled }
+let Component = component(containr)
+let Wired = wired(containr)
+let EntryPoint = entryPoint(containr)
+
+export { Component, Wired, componentScanner as ComponentScanner, EntryPoint, assembled }

@@ -19,5 +19,6 @@ class Application {
   
   main(containr) {
     containr.component("application").test()
+    containr.component("compc").helloWorld()
   }
 }
